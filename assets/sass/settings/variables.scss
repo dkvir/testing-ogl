@@ -1,0 +1,45 @@
+@use "sass:math";
+
+$default-window-width: 1920 !default;
+$default-window-height: 1080 !default;
+
+$default-timing-speed: 0.35s;
+$default-timing-func: cubic-bezier(0.33, 1, 0.68, 1);
+
+$square-size: 20px;
+
+$sizes: "xxs", "xs", "s", "m", "l", "xl", "xxl", "3xl", "4xl", "5xl";
+
+$colors: (
+  "transparent": transparent,
+  "black": #000,
+  "white": #fff,
+  "monza": #e00909,
+  "firefly": #0c2a24,
+  "fantasy": #fcf5f5,
+  "rosewood": #4d100d,
+  "tamarind": #2a1312,
+  "wild-sand": #f5f3f3,
+  "di-serria": #d8ac61,
+  "radisson": #e4e7e6,
+  "offwhite": #f5f5f5,
+  "rubyred": #f90b0b,
+  "black-haze": #f0f1f1,
+  "seal-brown": #2a1312,
+  "ghostwaver": #e2dbdb,
+  "freinacht": #212b36,
+  "bleached-white": #dfe3e8,
+  "blue-heeler": #919eab,
+  "light-gray": #e6dfdf,
+  "fence": #0a392f,
+  "white-smoke": #f5f5f3,
+  "necklace": #f7eded,
+  "eleonor": #f4f4f4,
+);
+
+$fonts: (
+  "november-georgian-reg": "NovemberGeorgianVariable-Reg",
+  "november-georgian-bold": "NovemberGeorgianVariable-Bold",
+  "november-georgian-lt": "NovemberGeorgianVariable-Lt",
+  "november-georgian-med": "NovemberGeorgianVariable-Med",
+);

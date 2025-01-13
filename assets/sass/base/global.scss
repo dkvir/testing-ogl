@@ -1,0 +1,30 @@
+html,
+body {
+  width: 100%;
+  height: auto;
+  min-height: 100svh;
+  overscroll-behavior: none;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+html {
+  background-color: var(--color-black);
+  font-size: 16px;
+  color: var(--color-firefly);
+  transition: 0.75s opacity ease-in-out;
+  &.is-loading {
+    opacity: 0;
+  }
+}
+
+body {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background-color: var(--selection-fill);
+  color: var(--selection-color);
+}

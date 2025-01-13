@@ -1,0 +1,29 @@
+:root {
+  @each $key, $name in $fonts {
+    --font-#{$key}: #{$name};
+  }
+
+  @each $name, $color in $colors {
+    --color-#{$name}: #{$color};
+  }
+
+  @each $size, $i in $sizes {
+    $i: index($sizes, $size);
+
+    @include get-var-vw($i * $square-size, layout-grid-#{$size});
+    --layout-grid-#{$size}-px: #{$i * $square-size};
+  }
+
+  --selection-fill: var(--color-monza);
+  --selection-color: var(--color-white);
+
+  --page-offset-padding: 64px;
+  --app-header-height: 96px;
+  @include mq(max-width 1366px) {
+    --page-offset-padding: 32px;
+  }
+  @include mq(max-width 1024px) {
+    --page-offset-padding: 16px;
+    --app-header-height: 53px;
+  }
+}
