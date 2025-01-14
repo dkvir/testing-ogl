@@ -35,13 +35,66 @@ export const useMedia = class {
     this.onResize();
   }
 
+  // createMesh() {
+  //   const texture = new Texture(this.gl, {
+  //     generateMipmaps: false,
+  //   });
+
+  //   const image = this.imageStore.loadedImages[this.textureIndex];
+  //   texture.image = image;
+
+  //   const program = new Program(this.gl, {
+  //     fragment,
+  //     vertex,
+  //     uniforms: {
+  //       tMap: { value: texture },
+  //       uPlaneSizes: { value: [0, 0] },
+  //       uImageSizes: { value: [0, 0] },
+  //       uViewportSizes: { value: [this.viewport.width, this.viewport.height] },
+  //       uStrength: { value: 0 },
+  //     },
+  //     transparent: true,
+  //   });
+
+  //   program.uniforms.uImageSizes.value = [image.width, image.height];
+
+  //   this.plane = new Mesh(this.gl, {
+  //     geometry: this.geometry,
+  //     program,
+  //   });
+
+  //   this.plane.setParent(this.scene);
+  // }
+
   createMesh() {
     const texture = new Texture(this.gl, {
       generateMipmaps: false,
     });
 
+    // Create a canvas to render text
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
     const image = this.imageStore.loadedImages[this.textureIndex];
-    texture.image = image;
+
+    // Set canvas size to match the image
+    canvas.width = image.width;
+    canvas.height = image.height;
+
+    // Draw the image onto the canvas
+    ctx.drawImage(image, 0, 0);
+
+    // Add text on top of the image
+    ctx.font = "bold 48px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+
+    const text = `Card ${this.textureIndex + 1}`;
+    ctx.fillText(text, canvas.width / 2, 20);
+
+    // Use the canvas as a texture
+    texture.image = canvas;
 
     const program = new Program(this.gl, {
       fragment,
@@ -49,7 +102,7 @@ export const useMedia = class {
       uniforms: {
         tMap: { value: texture },
         uPlaneSizes: { value: [0, 0] },
-        uImageSizes: { value: [0, 0] },
+        uImageSizes: { value: [image.width, image.height] },
         uViewportSizes: { value: [this.viewport.width, this.viewport.height] },
         uStrength: { value: 0 },
       },
@@ -67,10 +120,10 @@ export const useMedia = class {
   }
 
   updateTextureIndex(direction) {
-    if (direction === "up") {
+    if (direction === "down") {
       // When moving up, get the next texture in sequence
       this.textureIndex = (this.textureIndex + 12) % this.totalTextures;
-    } else if (direction === "down") {
+    } else if (direction === "up") {
       // When moving down, get the previous texture in sequence
       this.textureIndex =
         (this.textureIndex - 12 + this.totalTextures) % this.totalTextures;
@@ -78,10 +131,36 @@ export const useMedia = class {
     this.updateTexture(this.textureIndex);
   }
 
+  // updateTexture(textureIndex) {
+  //   const image = this.imageStore.loadedImages[textureIndex];
+
+  //   this.plane.program.uniforms.tMap.value.image = image;
+  //   this.plane.program.uniforms.tMap.value.needsUpdate = true;
+  // }
+
   updateTexture(textureIndex) {
     const image = this.imageStore.loadedImages[textureIndex];
 
-    this.plane.program.uniforms.tMap.value.image = image;
+    // Create a canvas for the updated texture
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Set canvas size to match the image
+    canvas.width = image.width;
+    canvas.height = image.height;
+
+    // Draw the image and text on the canvas
+    ctx.drawImage(image, 0, 0);
+    ctx.font = "bold 48px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+
+    const text = `Card ${textureIndex + 1}`;
+    ctx.fillText(text, canvas.width / 2, 20);
+
+    // Update the texture with the new canvas
+    this.plane.program.uniforms.tMap.value.image = canvas;
     this.plane.program.uniforms.tMap.value.needsUpdate = true;
   }
 
