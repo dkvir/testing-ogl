@@ -1,6 +1,7 @@
 import { Mesh, Program, Texture } from "ogl";
 import fragment from "public/glsl/fragment.glsl";
 import vertex from "public/glsl/vertex.glsl";
+import { useImageStore } from "@/store/imagesLoaded";
 
 export const useMedia = class {
   constructor({
@@ -14,7 +15,6 @@ export const useMedia = class {
     index,
   }) {
     this.element = element;
-    this.image = this.element.querySelector("img");
 
     this.extra = 0;
     this.height = height;
@@ -24,11 +24,10 @@ export const useMedia = class {
     this.screen = screen;
     this.viewport = viewport;
     this.cardIndex = index;
+    this.imageStore = useImageStore();
 
-    // Track the actual texture index (0-35) for this card
     this.textureIndex = index;
-    // Total number of available textures
-    this.totalTextures = 24;
+    this.totalTextures = this.imageStore.totalImages;
 
     this.createMesh();
     this.createBounds();
@@ -37,23 +36,12 @@ export const useMedia = class {
   }
 
   createMesh() {
-    const texture = new Texture(this.gl);
+    const texture = new Texture(this.gl, {
+      generateMipmaps: false,
+    });
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    const image = new Image();
-    // Use the correct texture index (0-35) instead of just the card index (0-11)
-    image.src = `images/${this.textureIndex + 1}.png`;
-
-    image.onload = () => {
-      canvas.width = image.naturalWidth;
-      canvas.height = image.naturalHeight;
-      ctx.drawImage(image, 0, 0);
-
-      texture.image = canvas;
-      program.uniforms.uImageSizes.value = [canvas.width, canvas.height];
-    };
+    const image = this.imageStore.loadedImages[this.textureIndex];
+    texture.image = image;
 
     const program = new Program(this.gl, {
       fragment,
@@ -67,6 +55,8 @@ export const useMedia = class {
       },
       transparent: true,
     });
+
+    program.uniforms.uImageSizes.value = [image.width, image.height];
 
     this.plane = new Mesh(this.gl, {
       geometry: this.geometry,
@@ -89,21 +79,10 @@ export const useMedia = class {
   }
 
   updateTexture(textureIndex) {
-    const imageSrc = `images/${textureIndex + 1}.png`;
+    const image = this.imageStore.loadedImages[textureIndex];
 
-    const image = new Image();
-    image.src = imageSrc;
-    image.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-
-      canvas.width = image.naturalWidth;
-      canvas.height = image.naturalHeight;
-      ctx.drawImage(image, 0, 0);
-
-      this.plane.program.uniforms.tMap.value.image = canvas;
-      this.plane.program.uniforms.tMap.value.needsUpdate = true;
-    };
+    this.plane.program.uniforms.tMap.value.image = image;
+    this.plane.program.uniforms.tMap.value.needsUpdate = true;
   }
 
   createBounds() {

@@ -8,8 +8,25 @@
 </template>
 
 <script setup>
+import { useImageStore } from "@/store/imagesLoaded";
+
+const imageStore = useImageStore();
+
+watch(
+  () => imageStore.isLoaded,
+  (curr) => {
+    const oglScene = new useOglScene();
+  }
+);
+
 onMounted(() => {
-  const oglScene = new useOglScene();
+  const imageUrls = [];
+
+  for (let i = 0; i < imageStore.totalImages; i++) {
+    imageUrls.push(`images/${i + 1}.png`);
+  }
+
+  imageStore.preloadImages(imageUrls);
 });
 </script>
 
